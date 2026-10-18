@@ -1,7 +1,8 @@
 # GigaShow - Backend
 
 API del proyecto GigaShow construida con Node.js, Express y PostgreSQL
-mediante Neon y Drizzle ORM.
+mediante Drizzle ORM. La conexión funciona tanto con PostgreSQL local como
+con Neon usando `DATABASE_URL`.
 
 ## Tecnologías
 
