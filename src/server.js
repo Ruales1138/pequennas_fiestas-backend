@@ -11,8 +11,16 @@ import { UploadRouter } from "./modules/upload/upload.routes.js";
 import { bookingsRouter } from "./modules/bookings/bookings.routes.js";
 import { fileURLToPath } from 'url'
 import path from 'path'
+import swaggerUi from "swagger-ui-express";
+import { openApiDocument } from "./config/openapi.js";
 
 const app = express();
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiDocument));
+
+app.get("/openapi.json", (_req, res) => {
+  return res.json(openApiDocument);
+});
 
 async function ensureArtistRatingsTable() {
   await sql`
