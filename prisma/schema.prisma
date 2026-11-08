@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  name          String
+  email         String         @unique
+  emailVerified Boolean        @default(false)
+  image         String?
+  role          String         @default("user") // "admin", "user", "artista", "cliente"
+  isActive      Boolean        @default(true)
+  deletedAt     DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  artistProfile   ArtistProfile?
+  clientBookings  Booking[]      @relation("ClientBookings")
+  artistBookings  Booking[]      @relation("ArtistBookings")
+  givenRatings    ArtistRating[] @relation("ClientRatings")
+  receivedRatings ArtistRating[] @relation("ArtistRatings")
+
+  @@map("users")
+}
+
+model ArtistProfile {
+  id           String    @id @default(uuid())
+  userId       String    @unique
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio          String?
+  contactPhone String?
+  contactSocial String?
+  baseRate     Decimal   @default(0.0) @db.Decimal(10, 2)
+  city         String
+  coverageArea String?
+  category     String
+  imageUrl     String?
+  isActive     Boolean   @default(true)
+  deletedAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([city])
+  @@index([category])
+  @@map("artist_profiles")
+}
+
+model Booking {
+  id            String    @id @default(uuid())
+  clientId      String
+  client        User      @relation("ClientBookings", fields: [clientId], references: [id], onDelete: Cascade)
+  artistId      String
+  artist        User      @relation("ArtistBookings", fields: [artistId], references: [id], onDelete: Cascade)
+  eventDate     DateTime
+  eventLocation String
+  description   String?
+  jobHours      Decimal   @default(1.0) @db.Decimal(5, 2)
+  agreedPrice   Decimal   @default(0.0) @db.Decimal(10, 2)
+  status        String    @default("pendiente") // "pendiente", "confirmada", "cancelada", "completada"
+  isActive      Boolean   @default(true)
+  deletedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([clientId])
+  @@index([artistId])
+  @@index([status])
+  @@map("bookings")
+}
+
+model ArtistRating {
+  id        String    @id @default(uuid())
+  artistId  String
+  artist    User      @relation("ArtistRatings", fields: [artistId], references: [id], onDelete: Cascade)
+  clientId  String
+  client    User      @relation("ClientRatings", fields: [clientId], references: [id], onDelete: Cascade)
+  rating    Decimal   @db.Decimal(3, 1)
+  comment   String?
+  isActive  Boolean   @default(true)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([artistId, clientId])
+  @@index([artistId])
+  @@map("artist_ratings")
+}
+
