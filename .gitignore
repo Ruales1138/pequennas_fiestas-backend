@@ -1,2 +1,10 @@
 node_modules
 dist
+
+# Archivos de asignaciones y agentes
+agents.md
+AGENTS.md
+readme_tareas_rubrica.md*
+README_TAREAS_RUBRICA.md*
+README_TAREAS_RUBRICA.md.pdf
+
