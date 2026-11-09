@@ -9,6 +9,7 @@ import { onboardingRouter } from "./modules/auth/onboarding.routes.js";
 import { artistsRouter } from "./modules/artists/artists.routes.js";
 import { UploadRouter } from "./modules/upload/upload.routes.js";
 import { bookingsRouter } from "./modules/bookings/bookings.routes.js";
+import { adminRouter } from "./modules/admin/admin.routes.js";
 import { fileURLToPath } from 'url'
 import path from 'path'
 import swaggerUi from "swagger-ui-express";
@@ -58,6 +59,7 @@ app.use(
 
 app.use("/api/auth", toNodeHandler(auth));
 app.use("/api/onboarding", onboardingRouter);
+app.use("/api/admin", adminRouter);
 app.use("/api/artists", artistsRouter);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
