@@ -1,5 +1,8 @@
-export function requireRole(...allowedRoles) {
-  return (req, res, next) => {
+import type { NextFunction, Response } from "express";
+import type { AuthenticatedRequest } from "./requireAuth.js";
+
+export function requireRole(...allowedRoles: string[]) {
+  return (req: AuthenticatedRequest, res: Response, next: NextFunction): Response | void => {
     const userRole = req.user?.role ?? req.session?.user?.role;
 
     if (!userRole || !allowedRoles.includes(userRole)) {

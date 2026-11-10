@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { openApiDocument } from "../src/config/openapi.js";
+import { openApiDocument } from "../dist/config/openapi.js";
 
 test("OpenAPI document exposes the health endpoints", () => {
   assert.equal(openApiDocument.openapi, "3.0.3");

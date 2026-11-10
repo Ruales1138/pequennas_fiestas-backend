@@ -14,8 +14,8 @@ import { uploadRouter } from "./interface/routers/upload.router.js";
 import { globalErrorHandler } from "./interface/middlewares/error.middleware.js";
 
 // Compatibilidad hacia atrás para módulos de administración y autenticación
-import { adminRouter } from "./modules/admin/admin.routes.js";
-import { onboardingRouter } from "./modules/auth/onboarding.routes.js";
+import { adminRouter } from "./interface/routers/admin.router.js";
+import { onboardingRouter } from "./interface/routers/onboarding.router.js";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./config/auth.js";
 

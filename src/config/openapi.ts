@@ -8,15 +8,15 @@ export const openApiDocument = {
   servers: [
     {
       url: "http://localhost:3000",
-      description: "Servidor local de desarrollo",
+      description: "Servidor local",
     },
   ],
   tags: [
-    { name: "Health", description: "Monitoreo y estado de salud" },
-    { name: "Artists", description: "Gestión de perfiles de artistas y catálogo" },
-    { name: "Bookings", description: "Gestión de reservas de eventos" },
-    { name: "Ratings", description: "Calificaciones y reseñas de artistas" },
-    { name: "Upload", description: "Subida de imágenes a Supabase Storage / S3" },
+    { name: "Health", description: "Estado del backend y la base de datos" },
+    { name: "Artists", description: "Catálogo de artistas" },
+    { name: "Bookings", description: "Gestión de reservas" },
+    { name: "Ratings", description: "Calificaciones de artistas" },
+    { name: "Upload", description: "Subida de imágenes" },
   ],
   paths: {
     "/health": {
@@ -73,39 +73,13 @@ export const openApiDocument = {
         ],
         responses: {
           200: { description: "Lista paginada de artistas" },
-          400: { description: "Parámetros de consulta inválidos" },
         },
       },
       post: {
         tags: ["Artists"],
         summary: "Crear un nuevo perfil de artista",
-        description: "Nota: Buri debe proteger esta ruta con requireAuth / requireRole",
-        requestBody: {
-          required: true,
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                required: ["userId", "city", "category", "baseRate"],
-                properties: {
-                  userId: { type: "string" },
-                  city: { type: "string" },
-                  category: { type: "string" },
-                  baseRate: { type: "number" },
-                  bio: { type: "string" },
-                  contactPhone: { type: "string" },
-                  contactSocial: { type: "string" },
-                  coverageArea: { type: "string" },
-                  imageUrl: { type: "string" },
-                },
-              },
-            },
-          },
-        },
         responses: {
           201: { description: "Artista creado exitosamente" },
-          400: { description: "Datos de entrada inválidos" },
-          409: { description: "El usuario ya tiene un perfil de artista" },
         },
       },
     },
@@ -142,13 +116,6 @@ export const openApiDocument = {
       get: {
         tags: ["Bookings"],
         summary: "Listado paginado de reservas con filtros",
-        parameters: [
-          { name: "page", in: "query", schema: { type: "integer", default: 1 } },
-          { name: "limit", in: "query", schema: { type: "integer", default: 10 } },
-          { name: "clientId", in: "query", schema: { type: "string" } },
-          { name: "artistId", in: "query", schema: { type: "string" } },
-          { name: "status", in: "query", schema: { type: "string" } },
-        ],
         responses: {
           200: { description: "Lista paginada de reservas" },
         },
@@ -156,30 +123,8 @@ export const openApiDocument = {
       post: {
         tags: ["Bookings"],
         summary: "Crear una nueva reserva",
-        requestBody: {
-          required: true,
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                required: ["clientId", "artistId", "eventDate", "eventLocation", "jobHours", "agreedPrice"],
-                properties: {
-                  clientId: { type: "string" },
-                  artistId: { type: "string" },
-                  eventDate: { type: "string", format: "date-time" },
-                  eventLocation: { type: "string" },
-                  description: { type: "string" },
-                  jobHours: { type: "number" },
-                  agreedPrice: { type: "number" },
-                },
-              },
-            },
-          },
-        },
         responses: {
           201: { description: "Reserva creada exitosamente" },
-          400: { description: "Validación de horario o datos erróneos" },
-          409: { description: "Conflicto de disponibilidad del artista" },
         },
       },
     },
@@ -204,7 +149,7 @@ export const openApiDocument = {
       },
       delete: {
         tags: ["Bookings"],
-        summary: "Borrado lógico de reserva (cancelar)",
+        summary: "Borrado lógico de reserva",
         parameters: [{ name: "id", in: "path", required: true, schema: { type: "string" } }],
         responses: {
           200: { description: "Reserva cancelada" },
@@ -216,41 +161,15 @@ export const openApiDocument = {
       get: {
         tags: ["Ratings"],
         summary: "Listado paginado de calificaciones",
-        parameters: [
-          { name: "page", in: "query", schema: { type: "integer", default: 1 } },
-          { name: "limit", in: "query", schema: { type: "integer", default: 10 } },
-          { name: "artistId", in: "query", schema: { type: "string" } },
-          { name: "clientId", in: "query", schema: { type: "string" } },
-          { name: "minRating", in: "query", schema: { type: "number" } },
-        ],
         responses: {
           200: { description: "Listado paginado de calificaciones" },
         },
       },
       post: {
         tags: ["Ratings"],
-        summary: "Crear una calificación para un artista",
-        requestBody: {
-          required: true,
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                required: ["artistId", "clientId", "rating"],
-                properties: {
-                  artistId: { type: "string" },
-                  clientId: { type: "string" },
-                  rating: { type: "number", minimum: 1, maximum: 5 },
-                  comment: { type: "string" },
-                },
-              },
-            },
-          },
-        },
+        summary: "Crear calificación",
         responses: {
           201: { description: "Calificación creada" },
-          400: { description: "Datos inválidos o auto-calificación" },
-          409: { description: "El cliente ya calificó a este artista" },
         },
       },
     },
@@ -258,39 +177,8 @@ export const openApiDocument = {
       post: {
         tags: ["Upload"],
         summary: "Subir imagen a Supabase Storage / S3",
-        description:
-          "Sube una imagen binaria (JPG, PNG, WEBP, GIF, máx 5MB) a Supabase Storage y opcionalmente asocia la URL al perfil del artista en la BD. NOTA PARA BURI: Aplicar requireAuth aquí.",
-        requestBody: {
-          required: true,
-          content: {
-            "multipart/form-data": {
-              schema: {
-                type: "object",
-                required: ["image"],
-                properties: {
-                  image: { type: "string", format: "binary" },
-                  artistId: { type: "string", description: "ID opcional del artista a actualizar" },
-                  userId: { type: "string", description: "ID opcional del usuario a actualizar" },
-                },
-              },
-            },
-          },
-        },
         responses: {
-          201: {
-            description: "Imagen subida exitosamente",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    message: { type: "string" },
-                    fileUrl: { type: "string" },
-                  },
-                },
-              },
-            },
-          },
+          201: { description: "Imagen subida exitosamente" },
           400: { description: "Formato no permitido o tamaño excedido" },
         },
       },

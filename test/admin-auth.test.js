@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { auth } from "../src/config/auth.js";
-import { requireAuth } from "../src/middlewares/requireAuth.js";
-import { requireRole } from "../src/middlewares/requireRole.js";
+import { auth } from "../dist/config/auth.js";
+import { requireAuth } from "../dist/interface/middlewares/requireAuth.js";
+import { requireRole } from "../dist/interface/middlewares/requireRole.js";
 
 test("requireAuth keeps a valid session and attaches the user", async () => {
   const originalGetSession = auth.api.getSession;
