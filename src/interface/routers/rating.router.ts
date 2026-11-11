@@ -8,6 +8,8 @@ import {
   DeleteRatingUseCase,
 } from "../../application/index.js";
 import { PrismaArtistRatingRepository } from "../../infrastructure/repository/prisma-artist-rating.repository.js";
+import { requireAuth } from "../middlewares/requireAuth.js";
+import { requireRole } from "../middlewares/requireRole.js";
 
 const ratingRepo = new PrismaArtistRatingRepository();
 
@@ -44,24 +46,24 @@ router.get("/:id", controller.getById);
 /**
  * @route   POST /api/ratings
  * @desc    Registrar una calificación para un artista
- * @access  Protegido (Buri: aplicar requireAuth / requireRole("cliente"))
+ * @access  Protegido (requireAuth / requireRole("cliente", "user", "admin"))
  */
-router.post("/", controller.create);
+router.post("/", requireAuth, requireRole("cliente", "user", "admin"), controller.create);
 
 /**
  * @route   PUT /api/ratings/:id
  * @desc    Actualizar calificación existente
- * @access  Protegido (Buri: aplicar requireAuth)
+ * @access  Protegido (requireAuth)
  */
-router.put("/:id", controller.update);
-router.patch("/:id", controller.update);
+router.put("/:id", requireAuth, controller.update);
+router.patch("/:id", requireAuth, controller.update);
 
 /**
  * @route   DELETE /api/ratings/:id
  * @desc    Borrado lógico de calificación (isActive: false)
- * @access  Protegido (Buri: aplicar requireAuth / requireRole("admin"))
+ * @access  Protegido (requireAuth / requireRole("admin"))
  */
-router.delete("/:id", controller.delete);
+router.delete("/:id", requireAuth, requireRole("admin"), controller.delete);
 
 export { router as ratingRouter };
 

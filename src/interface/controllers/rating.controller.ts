@@ -43,7 +43,12 @@ export class RatingController {
 
   create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const validated = createRatingSchema.parse(req.body);
+      const authUser = (req as any).user;
+      const payload = {
+        ...req.body,
+        clientId: req.body?.clientId ?? authUser?.id,
+      };
+      const validated = createRatingSchema.parse(payload);
       const rating = await this.createRatingUseCase.execute(validated);
       res.status(201).json({
         message: "Calificación registrada exitosamente",

@@ -5,12 +5,14 @@ import {
   CreateArtistUseCase,
   UpdateArtistUseCase,
   DeleteArtistUseCase,
+  CreateRatingUseCase,
 } from "../../application/index.js";
 import {
   createArtistSchema,
   updateArtistSchema,
   artistFilterQuerySchema,
 } from "../../infrastructure/dtos/artist.dto.js";
+import { createRatingSchema } from "../../infrastructure/dtos/rating.dto.js";
 import { PrismaArtistRatingRepository } from "../../infrastructure/repository/prisma-artist-rating.repository.js";
 
 export class ArtistController {
@@ -63,9 +65,45 @@ export class ArtistController {
     }
   };
 
+  createRating = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const id = String(req.params.id);
+      const artist = await this.getArtistByIdUseCase.execute(id);
+      const ratingRepo = this.ratingRepo ?? new PrismaArtistRatingRepository();
+      const createRatingUseCase = new CreateRatingUseCase(ratingRepo);
+
+      const authUser = (req as any).user;
+      const payload = {
+        ...req.body,
+        artistId: artist.userId,
+        clientId: req.body?.clientId ?? authUser?.id,
+      };
+
+      const validated = createRatingSchema.parse(payload);
+      const created = await createRatingUseCase.execute(validated);
+      const summary = await ratingRepo.getAverageRating(artist.userId);
+
+      res.status(201).json({
+        message: "Calificación registrada exitosamente",
+        data: created,
+        meta: {
+          rating: summary.average,
+          ratingCount: summary.count,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const validated = createArtistSchema.parse(req.body);
+      const authUser = (req as any).user;
+      const payload = {
+        ...req.body,
+        userId: req.body?.userId ?? authUser?.id,
+      };
+      const validated = createArtistSchema.parse(payload);
       const artist = await this.createArtistUseCase.execute(validated);
       res.status(201).json({
         message: "Perfil de artista creado exitosamente",

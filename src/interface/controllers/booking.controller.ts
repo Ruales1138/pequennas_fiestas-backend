@@ -11,6 +11,7 @@ import {
   updateBookingSchema,
   bookingFilterQuerySchema,
 } from "../../infrastructure/dtos/booking.dto.js";
+import { PrismaArtistProfileRepository } from "../../infrastructure/repository/prisma-artist-profile.repository.js";
 
 export class BookingController {
   constructor(
@@ -18,7 +19,8 @@ export class BookingController {
     private readonly getBookingByIdUseCase: GetBookingByIdUseCase,
     private readonly createBookingUseCase: CreateBookingUseCase,
     private readonly updateBookingUseCase: UpdateBookingUseCase,
-    private readonly deleteBookingUseCase: DeleteBookingUseCase
+    private readonly deleteBookingUseCase: DeleteBookingUseCase,
+    private readonly artistRepo?: PrismaArtistProfileRepository
   ) {}
 
   list = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -26,6 +28,32 @@ export class BookingController {
       bookingFilterQuerySchema.parse(req.query);
       const result = await this.listBookingsUseCase.execute(req.query);
       res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  listForArtist = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const authUser = (req as any).user;
+      const artistUserId = String(req.query.artistId ?? authUser?.id ?? "");
+      const result = await this.listBookingsUseCase.execute({
+        ...req.query,
+        artistId: artistUserId || undefined,
+        limit: String(req.query.limit ?? "100"),
+      });
+
+      const formatted = result.data.map((b) => ({
+        ...b,
+        clientName: b.client?.name ?? "Cliente",
+        clientEmail: b.client?.email ?? "",
+        clientImage: b.client?.image ?? null,
+      }));
+
+      res.status(200).json({
+        data: formatted,
+        pagination: result.pagination,
+      });
     } catch (error) {
       next(error);
     }
@@ -43,7 +71,23 @@ export class BookingController {
 
   create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const validated = createBookingSchema.parse(req.body);
+      const authUser = (req as any).user;
+      let resolvedArtistId = req.body?.artistId;
+
+      if (resolvedArtistId && this.artistRepo) {
+        const profile = await this.artistRepo.findById(String(resolvedArtistId));
+        if (profile?.userId) {
+          resolvedArtistId = profile.userId;
+        }
+      }
+
+      const payload = {
+        ...req.body,
+        clientId: req.body?.clientId ?? authUser?.id,
+        artistId: resolvedArtistId,
+      };
+
+      const validated = createBookingSchema.parse(payload);
       const booking = await this.createBookingUseCase.execute(validated);
       res.status(201).json({
         message: "Reserva creada exitosamente",

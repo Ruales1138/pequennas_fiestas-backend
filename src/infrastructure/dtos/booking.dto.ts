@@ -35,7 +35,7 @@ export const createBookingSchema = z.object({
       })
     ),
   status: z
-    .enum(["pendiente", "confirmada", "cancelada", "completada"])
+    .enum(["pendiente", "confirmada", "aceptada", "rechazada", "cancelada", "completada"])
     .optional()
     .default("pendiente"),
 });
@@ -60,7 +60,9 @@ export const updateBookingSchema = z.object({
     .min(0)
     .or(z.string().transform((v) => Number.parseFloat(v)))
     .optional(),
-  status: z.enum(["pendiente", "confirmada", "cancelada", "completada"]).optional(),
+  status: z
+    .enum(["pendiente", "confirmada", "aceptada", "rechazada", "cancelada", "completada"])
+    .optional(),
 });
 
 export const bookingFilterQuerySchema = z.object({

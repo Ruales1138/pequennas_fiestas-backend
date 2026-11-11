@@ -9,6 +9,8 @@ import {
 } from "../../application/index.js";
 import { PrismaArtistProfileRepository } from "../../infrastructure/repository/prisma-artist-profile.repository.js";
 import { PrismaArtistRatingRepository } from "../../infrastructure/repository/prisma-artist-rating.repository.js";
+import { requireAuth } from "../middlewares/requireAuth.js";
+import { requireRole } from "../middlewares/requireRole.js";
 
 const artistRepo = new PrismaArtistProfileRepository();
 const ratingRepo = new PrismaArtistRatingRepository();
@@ -52,26 +54,38 @@ router.get("/:id", controller.getById);
 router.get("/:id/ratings", controller.getRatings);
 
 /**
+ * @route   POST /api/artists/:id/ratings
+ * @desc    Registrar calificación de un artista autenticado
+ * @access  Protegido (requireAuth / requireRole("cliente", "user", "admin"))
+ */
+router.post(
+  "/:id/ratings",
+  requireAuth,
+  requireRole("cliente", "user", "admin"),
+  controller.createRating
+);
+
+/**
  * @route   POST /api/artists
  * @desc    Crear un nuevo perfil de artista
- * @access  Protegido (Buri: aplicar requireAuth / requireRole("admin", "artista"))
+ * @access  Protegido (requireAuth / requireRole("admin", "artista"))
  */
-router.post("/", controller.create);
+router.post("/", requireAuth, requireRole("artista", "admin"), controller.create);
 
 /**
  * @route   PUT /api/artists/:id
  * @desc    Actualizar perfil de artista
- * @access  Protegido (Buri: aplicar requireAuth)
+ * @access  Protegido (requireAuth / requireRole("admin", "artista"))
  */
-router.put("/:id", controller.update);
-router.patch("/:id", controller.update);
+router.put("/:id", requireAuth, requireRole("artista", "admin"), controller.update);
+router.patch("/:id", requireAuth, requireRole("artista", "admin"), controller.update);
 
 /**
  * @route   DELETE /api/artists/:id
  * @desc    Borrado lógico de artista (isActive: false)
- * @access  Protegido (Buri: aplicar requireAuth / requireRole("admin"))
+ * @access  Protegido (requireAuth / requireRole("admin"))
  */
-router.delete("/:id", controller.delete);
+router.delete("/:id", requireAuth, requireRole("admin"), controller.delete);
 
 export { router as artistRouter };
 
