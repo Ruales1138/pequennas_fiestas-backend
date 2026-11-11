@@ -13,12 +13,34 @@ export const openApiDocument = {
   ],
   tags: [
     { name: "Health", description: "Estado del backend y la base de datos" },
+    { name: "Auth", description: "Autenticación JWT y gestión de sesión" },
     { name: "Artists", description: "Catálogo de artistas" },
     { name: "Bookings", description: "Gestión de reservas" },
     { name: "Ratings", description: "Calificaciones de artistas" },
     { name: "Upload", description: "Subida de imágenes" },
   ],
   paths: {
+    "/api/auth/register": {
+      post: {
+        tags: ["Auth"],
+        summary: "Registrar nuevo usuario con contraseña encriptada (bcrypt) y retornar JWT",
+        responses: {
+          201: { description: "Usuario registrado exitosamente" },
+          400: { description: "Datos inválidos o rol no permitido" },
+          409: { description: "El correo electrónico ya está registrado" },
+        },
+      },
+    },
+    "/api/auth/login": {
+      post: {
+        tags: ["Auth"],
+        summary: "Iniciar sesión y obtener token JWT",
+        responses: {
+          200: { description: "Inicio de sesión exitoso" },
+          401: { description: "Credenciales inválidas" },
+        },
+      },
+    },
     "/health": {
       get: {
         tags: ["Health"],

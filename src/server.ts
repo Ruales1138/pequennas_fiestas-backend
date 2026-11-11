@@ -14,6 +14,7 @@ import { uploadRouter } from "./interface/routers/upload.router.js";
 import { globalErrorHandler } from "./interface/middlewares/error.middleware.js";
 
 // Compatibilidad hacia atrás para módulos de administración y autenticación
+import { authRouter } from "./interface/routers/auth.router.js";
 import { adminRouter } from "./interface/routers/admin.router.js";
 import { onboardingRouter } from "./interface/routers/onboarding.router.js";
 import { toNodeHandler } from "better-auth/node";
@@ -38,6 +39,7 @@ app.get("/openapi.json", (_req: Request, res: Response) => {
 });
 
 // Rutas de autenticación y onboarding (módulos asignados a Buri)
+app.use("/api/auth", authRouter);
 app.use("/api/auth", toNodeHandler(auth));
 app.use("/api/onboarding", onboardingRouter);
 app.use("/api/admin", adminRouter);

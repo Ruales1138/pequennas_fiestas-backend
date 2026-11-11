@@ -1,8 +1,10 @@
+export * from "./controllers/auth.controller.js";
 export * from "./controllers/artist.controller.js";
 export * from "./controllers/booking.controller.js";
 export * from "./controllers/rating.controller.js";
 export * from "./controllers/upload.controller.js";
 
+export * from "./routers/auth.router.js";
 export * from "./routers/artist.router.js";
 export * from "./routers/booking.router.js";
 export * from "./routers/rating.router.js";

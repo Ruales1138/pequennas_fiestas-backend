@@ -1,3 +1,6 @@
+export * from "./use-cases/auth/register-user.use-case.js";
+export * from "./use-cases/auth/login-user.use-case.js";
+
 export * from "./use-cases/artists/list-artists.use-case.js";
 export * from "./use-cases/artists/get-artist.use-case.js";
 export * from "./use-cases/artists/create-artist.use-case.js";
