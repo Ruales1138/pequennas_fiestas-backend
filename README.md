@@ -107,9 +107,14 @@ npm test
 
 ## 6. Despliegue en Producción (Render)
 
+- **URL de Producción (Backend):** [https://pequennas-fiestas-backend.onrender.com](https://pequennas-fiestas-backend.onrender.com)
+- **Healthcheck:** [https://pequennas-fiestas-backend.onrender.com/health](https://pequennas-fiestas-backend.onrender.com/health)
+- **Swagger / OpenAPI:** [https://pequennas-fiestas-backend.onrender.com/api-docs](https://pequennas-fiestas-backend.onrender.com/api-docs)
+
+### Pasos de Configuración en Render
 1. Crear un servicio **Web Service** en [Render](https://render.com) conectado al repositorio `Ruales1138/pequennas_fiestas-backend`.
 2. Configurar los comandos del servicio:
    - **Build Command:** `npm install --include=dev && npm run build && npm run db:deploy`
    - **Start Command:** `npm start`
-3. Configurar las variables de entorno en Render (`DATABASE_URL`, `JWT_SECRET`, `FRONTEND_ORIGIN` apuntando al dominio de Vercel, `SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_BUCKET`).
-4. Verificar estado en `https://<tu-servicio>.onrender.com/health` y `/api-docs`.
+3. Configurar las variables de entorno en Render (`DATABASE_URL`, `JWT_SECRET`, `FRONTEND_ORIGIN=https://pequennasfiestas-frontend.vercel.app`, `SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_BUCKET`).
+4. Verificar estado en `https://pequennas-fiestas-backend.onrender.com/health` y `/api-docs`.
