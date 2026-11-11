@@ -191,5 +191,25 @@ export class PrismaArtistProfileRepository implements IArtistProfileRepository {
 
     return this.mapToDomain(row);
   }
+
+  async findAllForAdmin(): Promise<ArtistProfileModel[]> {
+    const rows = await this.client.artistProfile.findMany({
+      include: { user: true },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return rows.map((r) => this.mapToDomain(r));
+  }
+
+  async findByIdForAdmin(id: string): Promise<ArtistProfileModel | null> {
+    const row = await this.client.artistProfile.findFirst({
+      where: {
+        OR: [{ id }, { userId: id }],
+      },
+      include: { user: true },
+    });
+
+    return row ? this.mapToDomain(row) : null;
+  }
 }
 

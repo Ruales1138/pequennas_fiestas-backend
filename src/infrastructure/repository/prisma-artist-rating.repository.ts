@@ -172,5 +172,23 @@ export class PrismaArtistRatingRepository implements IArtistRatingRepository {
 
     return { average, count: ratings.length };
   }
+
+  async findAllForAdmin(): Promise<ArtistRatingModel[]> {
+    const rows = await this.client.artistRating.findMany({
+      include: { client: true, artist: true },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return rows.map((r) => this.mapToDomain(r));
+  }
+
+  async findByIdForAdmin(id: string): Promise<ArtistRatingModel | null> {
+    const row = await this.client.artistRating.findFirst({
+      where: { id },
+      include: { client: true, artist: true },
+    });
+
+    return row ? this.mapToDomain(row) : null;
+  }
 }
 

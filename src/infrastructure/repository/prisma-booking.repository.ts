@@ -194,5 +194,23 @@ export class PrismaBookingRepository implements IBookingRepository {
       return startTime < bEnd && endTime > bStart;
     });
   }
+
+  async findAllForAdmin(): Promise<BookingModel[]> {
+    const rows = await this.client.booking.findMany({
+      include: { client: true, artist: true },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return rows.map((r) => this.mapToDomain(r));
+  }
+
+  async findByIdForAdmin(id: string): Promise<BookingModel | null> {
+    const row = await this.client.booking.findFirst({
+      where: { id },
+      include: { client: true, artist: true },
+    });
+
+    return row ? this.mapToDomain(row) : null;
+  }
 }
 

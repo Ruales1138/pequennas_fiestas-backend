@@ -1,78 +1,30 @@
 import { Router } from "express";
-import { prisma } from "../../infrastructure/prisma/prisma.client.js";
+import { AdminController } from "../controllers/admin.controller.js";
 import { requireAuth } from "../middlewares/requireAuth.js";
 import { requireRole } from "../middlewares/requireRole.js";
 
 export const adminRouter = Router();
+const controller = new AdminController();
 
 adminRouter.use(requireAuth);
 adminRouter.use(requireRole("admin"));
 
-adminRouter.get("/users", async (_req, res, next) => {
-  try {
-    const rows = await prisma.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        isActive: true,
-        createdAt: true,
-      },
-      orderBy: { createdAt: "desc" },
-    });
-    return res.json({ ok: true, data: rows });
-  } catch (error) {
-    return next(error);
-  }
-});
+// Gestión administrativa y auditoría de usuarios
+adminRouter.get("/users", controller.listUsers);
+adminRouter.patch("/users/:id/status", controller.updateUserStatus);
+adminRouter.delete("/users/:id", controller.deleteUser);
 
-adminRouter.get("/artists", async (_req, res, next) => {
-  try {
-    const rows = await prisma.artistProfile.findMany({
-      include: { user: true },
-      orderBy: { createdAt: "desc" },
-    });
+// Gestión administrativa y auditoría de artistas
+adminRouter.get("/artists", controller.listArtists);
+adminRouter.patch("/artists/:id/status", controller.updateArtistStatus);
+adminRouter.delete("/artists/:id", controller.deleteArtist);
 
-    const formatted = rows.map((a) => ({
-      id: a.id,
-      userId: a.userId,
-      name: a.user?.name ?? "",
-      email: a.user?.email ?? "",
-      role: a.user?.role ?? "artista",
-      city: a.city,
-      category: a.category,
-      baseRate: Number(a.baseRate),
-      bio: a.bio,
-    }));
+// Gestión administrativa y auditoría de reservas
+adminRouter.get("/bookings", controller.listBookings);
+adminRouter.patch("/bookings/:id/status", controller.updateBookingStatus);
+adminRouter.delete("/bookings/:id", controller.deleteBooking);
 
-    return res.json({ ok: true, data: formatted });
-  } catch (error) {
-    return next(error);
-  }
-});
-
-adminRouter.get("/bookings", async (_req, res, next) => {
-  try {
-    const rows = await prisma.booking.findMany({
-      orderBy: { createdAt: "desc" },
-    });
-
-    const formatted = rows.map((b) => ({
-      id: b.id,
-      clientId: b.clientId,
-      artistId: b.artistId,
-      eventDate: b.eventDate,
-      eventLocation: b.eventLocation,
-      description: b.description,
-      jobHours: Number(b.jobHours),
-      agreedPrice: Number(b.agreedPrice),
-      status: b.status,
-      createdAt: b.createdAt,
-    }));
-
-    return res.json({ ok: true, data: formatted });
-  } catch (error) {
-    return next(error);
-  }
-});
+// Gestión administrativa y auditoría de calificaciones
+adminRouter.get("/ratings", controller.listRatings);
+adminRouter.patch("/ratings/:id/status", controller.updateRatingStatus);
+adminRouter.delete("/ratings/:id", controller.deleteRating);
