@@ -3,6 +3,7 @@ CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
+    "password" TEXT,
     "emailVerified" BOOLEAN NOT NULL DEFAULT false,
     "image" TEXT,
     "role" TEXT NOT NULL DEFAULT 'user',
