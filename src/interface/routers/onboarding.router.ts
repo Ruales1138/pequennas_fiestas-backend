@@ -1,22 +1,52 @@
 import { Router, type Request, type Response } from "express";
 import { prisma } from "../../infrastructure/prisma/prisma.client.js";
 import { auth } from "../../config/auth.js";
+import { verifyJwtToken } from "../../infrastructure/services/jwt-auth.service.js";
 
 export const onboardingRouter = Router();
 
-onboardingRouter.post("/role", async (req: Request, res: Response) => {
+async function resolveAuthenticatedUserId(req: Request): Promise<string | null> {
+  const authHeader = req.headers?.authorization || req.headers?.Authorization;
+  if (typeof authHeader === "string") {
+    const [scheme, token] = authHeader.trim().split(/\s+/);
+    if (scheme?.toLowerCase() === "bearer" && token) {
+      try {
+        const decoded = verifyJwtToken(token);
+        if (decoded?.id) return decoded.id;
+      } catch {
+        // Fallback to session lookup if token is not a JWT
+      }
+    }
+  }
+
   try {
     const session = await auth.api.getSession({ headers: req.headers as any });
+    return session?.user?.id ?? null;
+  } catch {
+    return null;
+  }
+}
 
-    if (!session?.user?.id) {
-      return res.status(401).json({ error: "Unauthorized" });
+onboardingRouter.post("/role", async (req: Request, res: Response) => {
+  try {
+    const userId = await resolveAuthenticatedUserId(req);
+
+    if (!userId) {
+      return res.status(401).json({ ok: false, error: "Unauthorized", message: "No autorizado" });
     }
 
-    const userId = session.user.id;
     const { role } = req.body ?? {};
 
+    if (role === "admin") {
+      return res.status(403).json({
+        ok: false,
+        error: "No está permitido auto-asignarse el rol de administrador",
+        message: "No está permitido auto-asignarse el rol de administrador",
+      });
+    }
+
     if (role !== "cliente" && role !== "artista") {
-      return res.status(400).json({ error: "Invalid role" });
+      return res.status(400).json({ ok: false, error: "Invalid role", message: "Rol inválido" });
     }
 
     await prisma.user.update({
@@ -44,19 +74,18 @@ onboardingRouter.post("/role", async (req: Request, res: Response) => {
     return res.json({ ok: true, role });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ ok: false, error: "Internal Server Error" });
   }
 });
 
 onboardingRouter.post("/artist-profile", async (req: Request, res: Response) => {
   try {
-    const session = await auth.api.getSession({ headers: req.headers as any });
+    const userId = (await resolveAuthenticatedUserId(req)) ?? req.body?.userId ?? null;
 
-    if (!session?.user?.id) {
-      return res.status(401).json({ error: "Unauthorized" });
+    if (!userId) {
+      return res.status(401).json({ ok: false, error: "Unauthorized", message: "No autorizado" });
     }
 
-    const userId = session.user.id;
     const { bio, contactPhone, contactSocial, baseRate, city, coverageArea, category } = req.body ?? {};
 
     const updated = await prisma.artistProfile.upsert({
@@ -85,6 +114,6 @@ onboardingRouter.post("/artist-profile", async (req: Request, res: Response) => 
     return res.json({ ok: true, profile: updated });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ ok: false, error: "Internal Server Error" });
   }
 });

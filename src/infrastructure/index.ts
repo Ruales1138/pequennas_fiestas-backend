@@ -1,4 +1,5 @@
 export * from "./prisma/prisma.client.js";
+export * from "./prisma/seed.js";
 export * from "./repository/prisma-user.repository.js";
 export * from "./repository/prisma-artist-profile.repository.js";
 export * from "./repository/prisma-booking.repository.js";
