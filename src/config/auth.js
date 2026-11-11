@@ -5,9 +5,15 @@ import { db } from "./db.js";
 import * as schema from "../schemas/schema.js";
 
 export const auth = betterAuth({
-  secret: process.env.BETTER_AUTH_SECRET,
+  secret:
+    process.env.BETTER_AUTH_SECRET ||
+    process.env.JWT_SECRET ||
+    "gigashow-fallback-production-secret-key-2026-secure",
 
-  baseURL: process.env.BACKEND_URL,
+  baseURL:
+    process.env.BACKEND_URL ||
+    process.env.RENDER_EXTERNAL_URL ||
+    "http://localhost:3000",
   trustedOrigins: ["http://localhost:3000", "http://localhost:5173"],
   basePath: "/api/auth",
 

@@ -29,9 +29,9 @@ src/
 
 | Integrante | Rol / Módulo | Responsabilidades Principales |
 | --- | --- | --- |
-| **Pinilla** | Backend Core, Prisma & Storage | Migración a TypeScript, arquitectura limpia de 4 capas, esquema y migraciones en Prisma ORM, CRUD de entidades (`artists`, `bookings`, `ratings`) con paginación/filtros/borrado lógico, e integración con Supabase Storage. |
-| **Ruales** | Frontend Next.js & UX | Migración a Next.js (App Router) con TypeScript, vistas principales, catálogo con filtros dinámicos, detalle de artista, formulario de reservas, cliente HTTP centralizado y diseño responsivo. |
-| **Tomás Buriticá (Buri)** | Seguridad, Auth JWT, Roles, Admin & QA | Autenticación JWT (`/api/auth/register`, `/api/auth/login`), hashing `bcrypt`, script de seed y roles (`admin` / `user`), middlewares `requireAuth` y `requireRole`, endpoints y panel administrativo (`/api/admin/*`), pruebas unitarias/E2E y despliegue en Render/Vercel. |
+| **Tomás Buriticá (Buri)** | Backend Core, Prisma & Storage | Migración a TypeScript, arquitectura limpia de 4 capas, esquema y migraciones en Prisma ORM, CRUD de entidades (`artists`, `bookings`, `ratings`) con paginación/filtros/borrado lógico, e integración con Supabase Storage. |
+| **David Ruales** | Frontend Next.js & UX | Migración a Next.js (App Router) con TypeScript, vistas principales, catálogo con filtros dinámicos, detalle de artista, formulario de reservas, cliente HTTP centralizado y diseño responsivo. |
+| **Juan Sebastián Pinilla Giraldo** | Seguridad, Auth JWT, Roles, Admin & QA | Autenticación JWT (`/api/auth/register`, `/api/auth/login`), hashing `bcrypt`, script de seed y roles (`admin` / `user`), middlewares `requireAuth` y `requireRole`, endpoints y panel administrativo (`/api/admin/*`), pruebas unitarias/E2E y despliegue en Render/Vercel. |
 
 ---
 
