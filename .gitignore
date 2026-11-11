@@ -1,5 +1,8 @@
 node_modules
 dist
+.env
+.env.*
+!.env.example
 
 # Archivos de asignaciones y agentes
 agents.md
