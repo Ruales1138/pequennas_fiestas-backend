@@ -25,9 +25,26 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
+const allowedOrigins = (process.env.FRONTEND_ORIGIN ?? "http://localhost:5173,http://localhost:3000,http://localhost:3001,http://localhost:8081")
+  .split(",")
+  .map((o) => o.trim().replace(/\/+$/, ""))
+  .filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_ORIGIN ?? "http://localhost:5173",
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      const normalized = origin.replace(/\/+$/, "");
+      if (
+        allowedOrigins.includes("*") ||
+        allowedOrigins.includes(normalized) ||
+        normalized.endsWith(".vercel.app") ||
+        /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(normalized)
+      ) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
     credentials: true,
   })
 );
