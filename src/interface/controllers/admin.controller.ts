@@ -39,14 +39,29 @@ export class AdminController {
         throw new NotFoundError(`Usuario con ID '${id}' no encontrado`);
       }
 
+      const hasEditFields = Boolean(req.body?.name || req.body?.email || req.body?.role);
       const nextActive =
-        typeof req.body?.isActive === "boolean" ? req.body.isActive : !existing.isActive;
+        typeof req.body?.isActive === "boolean"
+          ? req.body.isActive
+          : hasEditFields
+            ? existing.isActive
+            : !existing.isActive;
       const nextRole =
         typeof req.body?.role === "string" && req.body.role.trim()
           ? req.body.role.trim()
           : existing.role;
+      const nextName =
+        typeof req.body?.name === "string" && req.body.name.trim()
+          ? req.body.name.trim()
+          : existing.name;
+      const nextEmail =
+        typeof req.body?.email === "string" && req.body.email.trim()
+          ? req.body.email.trim().toLowerCase()
+          : existing.email;
 
       const updated = await this.userRepo.update(id, {
+        name: nextName,
+        email: nextEmail,
         isActive: nextActive,
         deletedAt: nextActive ? null : new Date(),
         role: nextRole,
@@ -54,9 +69,7 @@ export class AdminController {
 
       res.status(200).json({
         ok: true,
-        message: nextActive
-          ? "Usuario activado exitosamente"
-          : "Usuario desactivado exitosamente (borrado lógico)",
+        message: "Usuario actualizado exitosamente",
         data: updated,
       });
     } catch (error) {
@@ -119,19 +132,34 @@ export class AdminController {
         throw new NotFoundError(`Perfil de artista con ID '${id}' no encontrado`);
       }
 
+      const hasEditFields = Boolean(
+        req.body?.name || req.body?.city || req.body?.category || req.body?.baseRate !== undefined || req.body?.bio !== undefined
+      );
       const nextActive =
-        typeof req.body?.isActive === "boolean" ? req.body.isActive : !existing.isActive;
+        typeof req.body?.isActive === "boolean"
+          ? req.body.isActive
+          : hasEditFields
+            ? existing.isActive
+            : !existing.isActive;
+
+      if (typeof req.body?.name === "string" && req.body.name.trim() && existing.userId) {
+        await this.userRepo.update(existing.userId, { name: req.body.name.trim() });
+      }
 
       const updated = await this.artistRepo.update(existing.id, {
+        ...(typeof req.body?.city === "string" && req.body.city.trim() ? { city: req.body.city.trim() } : {}),
+        ...(typeof req.body?.category === "string" && req.body.category.trim() ? { category: req.body.category.trim() } : {}),
+        ...(req.body?.baseRate !== undefined && Number.isFinite(Number(req.body.baseRate))
+          ? { baseRate: Number(req.body.baseRate) }
+          : {}),
+        ...(typeof req.body?.bio === "string" ? { bio: req.body.bio } : {}),
         isActive: nextActive,
         deletedAt: nextActive ? null : new Date(),
       });
 
       res.status(200).json({
         ok: true,
-        message: nextActive
-          ? "Perfil de artista activado exitosamente"
-          : "Perfil de artista desactivado exitosamente (borrado lógico)",
+        message: "Perfil de artista actualizado exitosamente",
         data: updated,
       });
     } catch (error) {
@@ -196,8 +224,15 @@ export class AdminController {
         throw new NotFoundError(`Reserva con ID '${id}' no encontrada`);
       }
 
+      const hasEditFields = Boolean(
+        req.body?.status || req.body?.eventLocation || req.body?.agreedPrice !== undefined || req.body?.description !== undefined
+      );
       const nextActive =
-        typeof req.body?.isActive === "boolean" ? req.body.isActive : !existing.isActive;
+        typeof req.body?.isActive === "boolean"
+          ? req.body.isActive
+          : hasEditFields
+            ? existing.isActive
+            : !existing.isActive;
       const nextStatus =
         typeof req.body?.status === "string" && req.body.status.trim()
           ? req.body.status.trim()
@@ -208,6 +243,13 @@ export class AdminController {
             : "cancelada";
 
       const updated = await this.bookingRepo.update(existing.id, {
+        ...(typeof req.body?.eventLocation === "string" && req.body.eventLocation.trim()
+          ? { eventLocation: req.body.eventLocation.trim() }
+          : {}),
+        ...(req.body?.agreedPrice !== undefined && Number.isFinite(Number(req.body.agreedPrice))
+          ? { agreedPrice: Number(req.body.agreedPrice) }
+          : {}),
+        ...(typeof req.body?.description === "string" ? { description: req.body.description } : {}),
         isActive: nextActive,
         deletedAt: nextActive ? null : new Date(),
         status: nextStatus,
@@ -278,10 +320,19 @@ export class AdminController {
         throw new NotFoundError(`Calificación con ID '${id}' no encontrada`);
       }
 
+      const hasEditFields = Boolean(req.body?.rating !== undefined || req.body?.comment !== undefined);
       const nextActive =
-        typeof req.body?.isActive === "boolean" ? req.body.isActive : !existing.isActive;
+        typeof req.body?.isActive === "boolean"
+          ? req.body.isActive
+          : hasEditFields
+            ? existing.isActive
+            : !existing.isActive;
 
       const updated = await this.ratingRepo.update(existing.id, {
+        ...(req.body?.rating !== undefined && Number.isFinite(Number(req.body.rating))
+          ? { rating: Number(req.body.rating) }
+          : {}),
+        ...(typeof req.body?.comment === "string" ? { comment: req.body.comment } : {}),
         isActive: nextActive,
         deletedAt: nextActive ? null : new Date(),
       });

@@ -64,6 +64,7 @@ export class PrismaUserRepository implements IUserRepository {
     id: string,
     data: Partial<{
       name: string;
+      email: string;
       image: string | null;
       role: string;
       isActive: boolean;
