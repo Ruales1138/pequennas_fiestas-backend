@@ -5,6 +5,7 @@ import swaggerUi from "swagger-ui-express";
 
 import { openApiDocument } from "./config/openapi.js";
 import { checkPrismaConnection, prisma } from "./infrastructure/prisma/prisma.client.js";
+import { uploadedFilesStore } from "./infrastructure/services/supabase-storage.service.js";
 
 // Importación de routers de las cuatro capas limpias
 import { artistRouter } from "./interface/routers/artist.router.js";
@@ -67,6 +68,22 @@ app.use("/api/bookings", bookingRouter);
 app.use("/api/ratings", ratingRouter);
 app.use("/api/upload", uploadRouter);
 
+// Servir archivos subidos al bucket S3/Supabase compatible cuando no hay bucket externo configurado
+app.get(
+  "/storage/v1/object/public/:bucket/:folder/:filename",
+  (req: Request, res: Response) => {
+    const key = `${req.params.bucket}/${req.params.folder}/${req.params.filename}`;
+    const stored = uploadedFilesStore.get(key);
+    if (!stored) {
+      res.status(404).json({ message: "Archivo no encontrado" });
+      return;
+    }
+    res.setHeader("Content-Type", stored.mimetype);
+    res.setHeader("Cache-Control", "public, max-age=31536000");
+    res.send(stored.buffer);
+  }
+);
+
 // Endpoints de salud y verificación
 app.get("/health", (_req: Request, res: Response) => {
   res.json({ ok: true, timestamp: new Date().toISOString() });
@@ -95,10 +112,56 @@ app.get("/api/db/tables", async (_req: Request, res: Response, next: NextFunctio
         AND table_type = 'BASE TABLE'
       ORDER BY table_name;
     `;
+
+    const columns: Array<{
+      table_name: string;
+      column_name: string;
+      data_type: string;
+      is_nullable: string;
+    }> = await prisma.$queryRaw`
+      SELECT table_name, column_name, data_type, is_nullable
+      FROM information_schema.columns
+      WHERE table_schema = 'public'
+      ORDER BY table_name, ordinal_position;
+    `;
+
+    const [usersCount, artistsCount, bookingsCount, ratingsCount] = await Promise.all([
+      prisma.user.count(),
+      prisma.artistProfile.count(),
+      prisma.booking.count(),
+      prisma.artistRating.count(),
+    ]);
+
     res.json({
       ok: true,
+      engine: "PostgreSQL + Prisma ORM",
       count: tables.length,
       data: tables.map((t) => t.table_name),
+      rowCounts: {
+        users: usersCount,
+        artist_profiles: artistsCount,
+        bookings: bookingsCount,
+        artist_ratings: ratingsCount,
+      },
+      foreignKeys: [
+        "artist_profiles.userId -> users.id (ON DELETE CASCADE)",
+        "bookings.clientId -> users.id (ON DELETE CASCADE)",
+        "bookings.artistId -> users.id (ON DELETE CASCADE)",
+        "artist_ratings.artistId -> users.id (ON DELETE CASCADE)",
+        "artist_ratings.clientId -> users.id (ON DELETE CASCADE)",
+      ],
+      columnsByTable: columns.reduce<Record<string, Array<{ column: string; type: string; nullable: boolean }>>>(
+        (acc, col) => {
+          if (!acc[col.table_name]) acc[col.table_name] = [];
+          acc[col.table_name].push({
+            column: col.column_name,
+            type: col.data_type,
+            nullable: col.is_nullable === "YES",
+          });
+          return acc;
+        },
+        {}
+      ),
     });
   } catch (error) {
     next(error);
