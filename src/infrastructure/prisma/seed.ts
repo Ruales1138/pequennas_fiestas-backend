@@ -42,7 +42,7 @@ const EXTRA_ARTISTS = [
       city: "Bogotá",
       coverageArea: "Bogotá y Cundinamarca",
       category: "DJ",
-      imageUrl: "https://images.unsplash.com/photo-1571266028243-e4733b0f0bb0?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=800&q=80",
     },
   },
   {
@@ -87,7 +87,7 @@ const EXTRA_ARTISTS = [
       city: "Barranquilla",
       coverageArea: "Costa Atlántica",
       category: "Acrobacia",
-      imageUrl: "https://images.unsplash.com/photo-1604882355850-a31f2fc55beb?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=800&q=80",
     },
   },
   {
@@ -206,6 +206,7 @@ export async function seedDatabase(client: PrismaClient = prisma) {
         city: "Medellín",
         coverageArea: "Valle de Aburrá y Oriente Antioqueño",
         category: "Música",
+        imageUrl: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80",
         isActive: true,
         deletedAt: null,
       },
@@ -218,6 +219,7 @@ export async function seedDatabase(client: PrismaClient = prisma) {
         city: "Medellín",
         coverageArea: "Valle de Aburrá y Oriente Antioqueño",
         category: "Música",
+        imageUrl: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80",
         isActive: true,
       },
     });
