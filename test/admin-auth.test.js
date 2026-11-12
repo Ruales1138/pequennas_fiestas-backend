@@ -45,6 +45,7 @@ test("requireAuth keeps a valid session and attaches the user", async () => {
 });
 
 test("requireAuth verifies a signed JWT Bearer token and rejects missing or malformed JWTs with 401", async () => {
+  process.env.JWT_SECRET = process.env.JWT_SECRET || "unit-test-super-secret";
   const { token } = signJwtToken({
     id: "admin-jwt-1",
     email: "admin@gigashow.com",
