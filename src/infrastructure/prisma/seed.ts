@@ -4,26 +4,26 @@ import { hashPassword, toPublicUser } from "../services/jwt-auth.service.js";
 
 export const SEED_USERS = {
   admin: {
-    name: "Administrador GigaShow",
-    email: "admin@gigashow.com",
+    name: "Administrador Pequeñas Fiestas",
+    email: "admin@pequennasfiestas.com",
     password: "Admin123!",
     role: "admin",
   },
   user: {
-    name: "Usuario Estándar GigaShow",
-    email: "user@gigashow.com",
+    name: "Usuario Estándar Pequeñas Fiestas",
+    email: "user@pequennasfiestas.com",
     password: "User123!",
     role: "user",
   },
   cliente: {
-    name: "Cliente Demo GigaShow",
-    email: "cliente@gigashow.com",
+    name: "Cliente Demo Pequeñas Fiestas",
+    email: "cliente@pequennasfiestas.com",
     password: "Cliente123!",
     role: "cliente",
   },
   artista: {
     name: "Banda Fiesta Show",
-    email: "artista@gigashow.com",
+    email: "artista@pequennasfiestas.com",
     password: "Artista123!",
     role: "artista",
   },
@@ -32,7 +32,7 @@ export const SEED_USERS = {
 const EXTRA_ARTISTS = [
   {
     name: "DJ Pequeño Beat",
-    email: "djbeat@gigashow.com",
+    email: "djbeat@pequennasfiestas.com",
     password: "Artista123!",
     profile: {
       bio: "DJ profesional especializado en fiestas corporativas, quinceañeros y bodas. Mezcla en vivo de reggaetón, electrónica y crossover.",
@@ -42,12 +42,12 @@ const EXTRA_ARTISTS = [
       city: "Bogotá",
       coverageArea: "Bogotá y Cundinamarca",
       category: "DJ",
-      imageUrl: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/artists/dj_beat.jpg",
     },
   },
   {
     name: "Magia con Andrés",
-    email: "magia.andres@gigashow.com",
+    email: "magia.andres@pequennasfiestas.com",
     password: "Artista123!",
     profile: {
       bio: "Mago profesional con más de 10 años de experiencia. Shows de magia cercana, ilusionismo de escenario y mentalismo para todo tipo de evento.",
@@ -57,12 +57,12 @@ const EXTRA_ARTISTS = [
       city: "Cali",
       coverageArea: "Valle del Cauca",
       category: "Magia",
-      imageUrl: "https://images.unsplash.com/photo-1503095396549-807759245b35?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/artists/magia_andres.jpg",
     },
   },
   {
     name: "Payasito Risas",
-    email: "payasitorisas@gigashow.com",
+    email: "payasitorisas@pequennasfiestas.com",
     password: "Artista123!",
     profile: {
       bio: "Animador y payaso profesional para fiestas infantiles. Shows con globoflexia, pintacaritas, juegos interactivos y mucha diversión garantizada.",
@@ -72,12 +72,12 @@ const EXTRA_ARTISTS = [
       city: "Medellín",
       coverageArea: "Área Metropolitana de Medellín",
       category: "Animación",
-      imageUrl: "https://images.unsplash.com/photo-1596464716127-f2a82984de30?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/artists/payasito_risas.jpg",
     },
   },
   {
     name: "Dúo Acrobático Stellar",
-    email: "stellar@gigashow.com",
+    email: "stellar@pequennasfiestas.com",
     password: "Artista123!",
     profile: {
       bio: "Dúo acrobático profesional con espectáculos de tela aérea, trapecio y acrobacias de piso. Ideal para galas, circos y eventos VIP.",
@@ -87,12 +87,12 @@ const EXTRA_ARTISTS = [
       city: "Barranquilla",
       coverageArea: "Costa Atlántica",
       category: "Acrobacia",
-      imageUrl: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/artists/stellar.jpg",
     },
   },
   {
     name: "Comedia en Vivo - Carlos P.",
-    email: "comediacarlos@gigashow.com",
+    email: "comediacarlos@pequennasfiestas.com",
     password: "Artista123!",
     profile: {
       bio: "Comediante de stand-up con shows personalizados para empresas y celebraciones privadas. Humor inteligente y apto para todas las audiencias.",
@@ -102,7 +102,7 @@ const EXTRA_ARTISTS = [
       city: "Bogotá",
       coverageArea: "Nacional",
       category: "Comedia",
-      imageUrl: "https://images.unsplash.com/photo-1527224857830-43a7acc85260?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/images/artists/comedia_carlos.jpg",
     },
   },
 ] as const;
@@ -206,7 +206,7 @@ export async function seedDatabase(client: PrismaClient = prisma) {
         city: "Medellín",
         coverageArea: "Valle de Aburrá y Oriente Antioqueño",
         category: "Música",
-        imageUrl: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/images/artists/artista_principal.jpg",
         isActive: true,
         deletedAt: null,
       },
@@ -219,7 +219,7 @@ export async function seedDatabase(client: PrismaClient = prisma) {
         city: "Medellín",
         coverageArea: "Valle de Aburrá y Oriente Antioqueño",
         category: "Música",
-        imageUrl: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80",
+        imageUrl: "/images/artists/artista_principal.jpg",
         isActive: true,
       },
     });

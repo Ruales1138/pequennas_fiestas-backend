@@ -1,9 +1,9 @@
 export const openApiDocument = {
   openapi: "3.0.3",
   info: {
-    title: "GigaShow API",
+    title: "Pequeñas Fiestas API",
     version: "1.0.0",
-    description: "API para artistas, clientes y reservas de GigaShow.",
+    description: "API para artistas, clientes y reservas de Pequeñas Fiestas.",
   },
   servers: [
     {
