@@ -29,6 +29,84 @@ export const SEED_USERS = {
   },
 } as const;
 
+const EXTRA_ARTISTS = [
+  {
+    name: "DJ Pequeño Beat",
+    email: "djbeat@gigashow.com",
+    password: "Artista123!",
+    profile: {
+      bio: "DJ profesional especializado en fiestas corporativas, quinceañeros y bodas. Mezcla en vivo de reggaetón, electrónica y crossover.",
+      contactPhone: "+57 311 456 7890",
+      contactSocial: "@djpequenobeat",
+      baseRate: 450000,
+      city: "Bogotá",
+      coverageArea: "Bogotá y Cundinamarca",
+      category: "DJ",
+      imageUrl: "https://images.unsplash.com/photo-1571266028243-e4733b0f0bb0?auto=format&fit=crop&w=800&q=80",
+    },
+  },
+  {
+    name: "Magia con Andrés",
+    email: "magia.andres@gigashow.com",
+    password: "Artista123!",
+    profile: {
+      bio: "Mago profesional con más de 10 años de experiencia. Shows de magia cercana, ilusionismo de escenario y mentalismo para todo tipo de evento.",
+      contactPhone: "+57 320 789 1234",
+      contactSocial: "@magiaconandres",
+      baseRate: 280000,
+      city: "Cali",
+      coverageArea: "Valle del Cauca",
+      category: "Magia",
+      imageUrl: "https://images.unsplash.com/photo-1503095396549-807759245b35?auto=format&fit=crop&w=800&q=80",
+    },
+  },
+  {
+    name: "Payasito Risas",
+    email: "payasitorisas@gigashow.com",
+    password: "Artista123!",
+    profile: {
+      bio: "Animador y payaso profesional para fiestas infantiles. Shows con globoflexia, pintacaritas, juegos interactivos y mucha diversión garantizada.",
+      contactPhone: "+57 315 234 5678",
+      contactSocial: "@payasitorisas",
+      baseRate: 200000,
+      city: "Medellín",
+      coverageArea: "Área Metropolitana de Medellín",
+      category: "Animación",
+      imageUrl: "https://images.unsplash.com/photo-1596464716127-f2a82984de30?auto=format&fit=crop&w=800&q=80",
+    },
+  },
+  {
+    name: "Dúo Acrobático Stellar",
+    email: "stellar@gigashow.com",
+    password: "Artista123!",
+    profile: {
+      bio: "Dúo acrobático profesional con espectáculos de tela aérea, trapecio y acrobacias de piso. Ideal para galas, circos y eventos VIP.",
+      contactPhone: "+57 318 567 8901",
+      contactSocial: "@duostellar",
+      baseRate: 600000,
+      city: "Barranquilla",
+      coverageArea: "Costa Atlántica",
+      category: "Acrobacia",
+      imageUrl: "https://images.unsplash.com/photo-1604882355850-a31f2fc55beb?auto=format&fit=crop&w=800&q=80",
+    },
+  },
+  {
+    name: "Comedia en Vivo - Carlos P.",
+    email: "comediacarlos@gigashow.com",
+    password: "Artista123!",
+    profile: {
+      bio: "Comediante de stand-up con shows personalizados para empresas y celebraciones privadas. Humor inteligente y apto para todas las audiencias.",
+      contactPhone: "+57 322 890 1234",
+      contactSocial: "@comediacarlosp",
+      baseRate: 380000,
+      city: "Bogotá",
+      coverageArea: "Nacional",
+      category: "Comedia",
+      imageUrl: "https://images.unsplash.com/photo-1527224857830-43a7acc85260?auto=format&fit=crop&w=800&q=80",
+    },
+  },
+] as const;
+
 export async function seedDatabase(client: PrismaClient = prisma) {
   const [adminHash, userHash, clienteHash, artistaHash] = await Promise.all([
     hashPassword(SEED_USERS.admin.password),
@@ -143,6 +221,58 @@ export async function seedDatabase(client: PrismaClient = prisma) {
         isActive: true,
       },
     });
+
+    // Seed extra artists
+    for (const extra of EXTRA_ARTISTS) {
+      const hash = await hashPassword(extra.password);
+      const extraUser = await client.user.upsert({
+        where: { email: extra.email },
+        update: {
+          name: extra.name,
+          password: hash,
+          role: "artista",
+          emailVerified: true,
+          isActive: true,
+          deletedAt: null,
+        },
+        create: {
+          name: extra.name,
+          email: extra.email,
+          password: hash,
+          role: "artista",
+          emailVerified: true,
+          isActive: true,
+        },
+      });
+
+      await client.artistProfile.upsert({
+        where: { userId: extraUser.id },
+        update: {
+          bio: extra.profile.bio,
+          contactPhone: extra.profile.contactPhone,
+          contactSocial: extra.profile.contactSocial,
+          baseRate: new Prisma.Decimal(extra.profile.baseRate),
+          city: extra.profile.city,
+          coverageArea: extra.profile.coverageArea,
+          category: extra.profile.category,
+          imageUrl: extra.profile.imageUrl,
+          isActive: true,
+          deletedAt: null,
+        },
+        create: {
+          userId: extraUser.id,
+          bio: extra.profile.bio,
+          contactPhone: extra.profile.contactPhone,
+          contactSocial: extra.profile.contactSocial,
+          baseRate: new Prisma.Decimal(extra.profile.baseRate),
+          city: extra.profile.city,
+          coverageArea: extra.profile.coverageArea,
+          category: extra.profile.category,
+          imageUrl: extra.profile.imageUrl,
+          isActive: true,
+        },
+      });
+    }
   }
 
   return {
