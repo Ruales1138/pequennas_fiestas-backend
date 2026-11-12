@@ -37,17 +37,17 @@ src/
 
 ## 3. Variables de Entorno
 
-Crea un archivo `.env` en `backend/` basándote en `.env.example` (nunca versiones `.env` en Git):
+Crea un archivo `.env` en `backend/` basándote en `.env.example` (nunca versiones `.env` ni credenciales reales en Git):
 
 ```env
-DATABASE_URL="postgresql://usuario:password@host:5432/gigashow?schema=public"
-JWT_SECRET="reemplazar-por-secreto-seguro-en-produccion"
+DATABASE_URL="postgresql://<DB_USER>:<DB_PASSWORD>@<DB_HOST>:5432/<DB_NAME>?schema=public"
+JWT_SECRET="<TU_JWT_SECRET>"
 JWT_EXPIRES_IN="24h"
 PORT=3000
 FRONTEND_ORIGIN="http://localhost:3001,http://localhost:5173"
 BACKEND_URL="http://localhost:3000"
-SUPABASE_URL="https://tu-proyecto.supabase.co"
-SUPABASE_KEY="tu-service-role-o-anon-key"
+SUPABASE_URL="https://<TU_PROYECTO>.supabase.co"
+SUPABASE_KEY="<TU_SUPABASE_KEY>"
 SUPABASE_BUCKET="artists"
 ```
 
@@ -61,14 +61,16 @@ npx prisma migrate deploy
 npm run seed
 ```
 
-### Credenciales de Prueba (Creadas por `prisma/seed.ts`)
+### Roles de Prueba (Aprovisionados por `prisma/seed.ts`)
 
-| Rol | Correo electrónico | Contraseña de prueba | Permisos |
-| --- | --- | --- | --- |
-| **Administrador (`admin`)** | `admin@gigashow.com` | `Admin123!` | Acceso total al panel `/admin` y endpoints `/api/admin/*` |
-| **Usuario estándar (`user`)** | `user@gigashow.com` | `User123!` | Exploración de catálogo, reservas y calificaciones (`403` en `/admin`) |
-| **Cliente (`cliente`)** | `cliente@gigashow.com` | `Cliente123!` | Creación de reservas y calificaciones (`403` en `/admin`) |
-| **Artista (`artista`)** | `artista@gigashow.com` | `Artista123!` | Gestión de su perfil artístico y reservas en `/dashboard` |
+El comando `npm run seed` aprovisiona automáticamente cuentas de prueba para cada rol del sistema (sin exponer credenciales reales en este documento):
+
+| Rol | Permisos en la Plataforma |
+| --- | --- |
+| **Administrador (`admin`)** | Acceso total al panel `/admin` y endpoints `/api/admin/*` |
+| **Usuario estándar (`user`)** | Exploración de catálogo, reservas y calificaciones (`403` en `/admin`) |
+| **Cliente (`cliente`)** | Creación de reservas y calificaciones (`403` en `/admin`) |
+| **Artista (`artista`)** | Gestión de su perfil artístico y reservas en `/dashboard` |
 
 > **Nota de seguridad:** El rol `admin` no puede ser elegido desde el registro público (`POST /api/auth/register`) ni desde onboarding (`POST /api/onboarding/artist-profile`). Solo se aprovisiona mediante el seed de base de datos.
 
